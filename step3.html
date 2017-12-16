@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My first Vue app</title>
+  <script src="https://unpkg.com/vue"></script>
+  <style>
+  .todo-default {
+    padding: 5px;
+    border-bottom: 1px solid silver;
+  }
+  .todo-doing {
+    background-color: floralwhite;
+  }
+  </style>
+</head>
+<body>
+  <div id="todoApp">
+    <h2>Todo with Component</h2>
+    <input type="text" v-model="todo" v-on:keyup.enter="addTodo">
+    <span>doing {{doings}} / {{todos.length}} task</span>
+    <div>
+      <todo-template v-for="t in todos" v-bind:t="t" v-on:todochanged="count"></todo-template>
+    </div>
+  </div>
+
+  <script type="text/x-template" id="todo-template">
+    <div v-bind:class="['todo-default', doing ? 'todo-doing' : '']"
+         v-on:click="begin">
+        {{t.name}}
+    </div>
+  </script>
+
+  <script>
+    Vue.component("todo-template", {
+      props: ["t"],
+      data: function(){
+        return {
+          doing: false
+        }
+      },
+      template: "#todo-template",
+      methods: {
+        begin: function () {
+          this.doing = !this.doing;
+          this.$emit("todochanged", this.doing);
+        }
+      }
+    });
+
+    var app = new Vue({
+      el: '#todoApp',
+      data: {
+        todo: "",
+        todos: [],
+        doings: 0
+      },
+      methods: {
+        addTodo: function() {
+            this.todos.push({
+            name: this.todo,
+            done: false
+          })
+          this.todo = ""
+        },
+        count: function(doing){
+          this.doings += doing ? 1 : -1;
+        }
+      }
+    })
+  </script>
+</body>
+</html>
